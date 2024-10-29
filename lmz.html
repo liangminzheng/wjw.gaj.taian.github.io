@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>无犯罪记录-无犯罪记录证明</title>
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
+  #pdf-canvas {
+    display: block; /* Remove extra space below the canvas */
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+  /* Simple pagination buttons */
+  .pagination {
+    text-align: center;
+    margin: 10px 0;
+  }
+  .pagination button {
+    padding: 10px 20px;
+    margin: 0 5px;
+  }
+</style>
+
+
+</head>
+<body>
+
+<!-- Canvas for PDF rendering -->
+<canvas id="pdf-canvas"></canvas>
+
+<!-- Load the pdf.js library -->
+<script src="pdf.js"></script>
+<script src="pdf.worker.js"></script>
+
+<script>
+// Asynchronous download of the PDF
+var pdfUrl = 'a.pdf'; // Replace with the actual URL of the PDF
+var pdfDocument = null;
+var canvas = document.getElementById('pdf-canvas');
+var ctx = canvas.getContext('2d');
+var scale = 1.5;
+var renderContext = {
+  canvasContext: ctx,
+  viewport: null
+};
+
+pdfjsLib.getDocument(pdfUrl).promise.then(function(pdfDoc) {
+  pdfDocument = pdfDoc;
+  return pdfDocument.getPage(1);
+}).then(function(page) {
+  var viewport = page.getViewport({scale: scale});
+  renderContext.viewport = viewport;
+  canvas.height = viewport.height;
+  canvas.width = viewport.width;
+  return page.render(renderContext);
+}).then(function() {
+  console.log('Page rendered');
+}).catch(function(error) {
+  console.error('Error rendering PDF: ', error);
+});
+</script>
+
+</body>
+</html>
